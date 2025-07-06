@@ -16,7 +16,42 @@ jobs:
         run: |
           pip install -r requirements-dev.txt
           pip install -e .
+          pip install opencv-python-headless
       - name: Run pre-commit
         run: pre-commit run --all-files
       - name: Run tests
         run: pytest
+      - name: Dry-run
+        run: |
+          python - <<'EOF'
+          import csv
+          from pathlib import Path
+          import numpy as np
+          from kc_fep_poc.metrics import generate_observations, compute_metrics
+
+          base = Path('dry_run')
+          base.mkdir(exist_ok=True)
+          csv_file = base / 'metrics.csv'
+          with csv_file.open('w', newline='') as f:
+              writer = csv.writer(f)
+              writer.writerow(
+                  ['episode', 'g_t', 'rho_t', 'k_hat', 'k_lzma', 'free_energy', 'file']
+              )
+              rng = np.random.default_rng(0)
+              for ep, p in enumerate([0.1, 0.3, 0.5, 0.7, 0.9]):
+                  obs = generate_observations(1000, p, rng)
+                  obs_file = base / f'ep{ep}.bin'
+                  obs.tofile(obs_file)
+                  metrics = compute_metrics(obs, p)
+                  writer.writerow([
+                      ep,
+                      metrics.g_t,
+                      metrics.rho_t,
+                      metrics.k_hat,
+                      metrics.k_lzma,
+                      metrics.free_energy,
+                      obs_file.name,
+                  ])
+          EOF
+      - name: Validate dry-run
+        run: python -m kc_fep_poc.validator dry_run/metrics.csv --base dry_run
