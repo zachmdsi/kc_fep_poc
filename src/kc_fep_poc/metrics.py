@@ -4,9 +4,24 @@ from dataclasses import dataclass
 import numpy as np
 
 
-def generate_observations(num_steps: int, p: float) -> np.ndarray:
-    """Simulate binary observations from Bernoulli(p)."""
-    return np.random.binomial(1, p, size=num_steps).astype(np.uint8)
+def generate_observations(
+    num_steps: int, p: float, rng: np.random.Generator | None = None
+) -> np.ndarray:
+    """Simulate binary observations from Bernoulli(p).
+
+    Parameters
+    ----------
+    num_steps : int
+        Number of observations to generate.
+    p : float
+        Bernoulli success probability.
+    rng : numpy.random.Generator, optional
+        Random number generator to use. If omitted, ``numpy.random.default_rng``
+        is used.
+    """
+
+    generator = np.random.default_rng() if rng is None else rng
+    return generator.binomial(1, p, size=num_steps).astype(np.uint8)
 
 
 def compute_nll(obs: np.ndarray, p: float) -> float:
