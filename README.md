@@ -107,3 +107,17 @@ Failure of any single prediction invalidates the claim that active inference yie
 
 Binding Kolmogorov complexity and variational free energy along a single bit-axis yields the clearest, falsifiable formulation of the Free-Energy Principle to date. An agent that cannot demonstrably compress its own history beyond universal compressors has no claim to “minimising surprise”; one that can, supplies the missing algorithmic proof.
 
+
+---
+
+## Running the Example
+
+1. Install dependencies (Python 3.8+ recommended):
+   ```bash
+   pip install numpy
+   ```
+2. Run the toy compression script:
+   ```bash
+   python src/main.py
+   ```
+   The script simulates a binary sensor stream, fits a Bernoulli model by maximum likelihood and reports the predicted metrics `G_T` and `\rho_T` alongside the LZMA baseline.
