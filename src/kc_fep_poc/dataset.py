@@ -45,7 +45,7 @@ def write_dataset(
             rng = np.random.default_rng(run_seed)
             obs = generate_observations(steps, p, rng)
             filename = subdir / f"run_{i:03d}.bin"
-            filename.write_bytes(bytes(obs))
+            obs.tofile(filename)
 
 
 def main(argv: list[str] | None = None) -> None:
