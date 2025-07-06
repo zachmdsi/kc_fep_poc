@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
-
 import haiku as hk
 import jax
 import jax.numpy as jnp
+import numpy as np
 import optax
 
 from .cem_planner import plan
