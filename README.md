@@ -19,3 +19,22 @@ The difference between the compressor’s length and the agent’s length is the
 Three predictions follow from this setup. First, the compression gap should never shrink for long once learning begins. A steady decline would suggest the model is failing to capture structure. Second, the better the compression gets, the more the free-energy score should drop—the two numbers should move together. Third, after enough experience in a stable environment, the agent’s description of the data should be shorter than the one produced by the compressor.
 
 Confirming these trends would support the idea that active inference not only guides actions but also shortens the algorithmic description of experience. If those trends disappear, we learn that the link may be weaker than theorised. Either outcome delivers a clear, measurable test of the free-energy principle.
+
+## Quick start
+
+1. Create a `config.yml` file describing the experiment. A minimal example:
+
+   ```yaml
+   episodes: 3
+   p: 0.5
+   steps: 128
+   csv_path: metrics.csv
+   ```
+
+2. Run the experiment:
+
+   ```bash
+   kc-fep-run
+   ```
+
+This writes `metrics.csv` and prints a table summarising each episode.

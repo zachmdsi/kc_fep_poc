@@ -11,6 +11,9 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies = ["numpy"]
 
+[project.scripts]
+"kc-fep-run" = "kc_fep_poc.cli_experiment:main"
+
 [tool.isort]
 profile = "black"
 
