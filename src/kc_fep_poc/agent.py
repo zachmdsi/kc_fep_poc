@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Callable
+
 import haiku as hk
 import jax
 import jax.numpy as jnp
@@ -14,7 +16,7 @@ class Agent:
 
     def __init__(
         self,
-        forward_fn,
+        forward_fn: Callable[[jnp.ndarray], dict[str, jnp.ndarray]],
         obs_shape: tuple[int, ...],
         *,
         lr: float = 1e-3,
@@ -34,6 +36,7 @@ class Agent:
     # Planner interface ------------------------------------------------
     def rollout(self, obs: np.ndarray, actions: np.ndarray) -> float:
         """Return predicted free energy cost for ``actions`` from ``obs``."""
+        # TODO: incorporate actions once a dynamics model is available
         # This toy rollout ignores actions and just evaluates the current obs.
         data = jnp.asarray(obs)
         if data.shape == self.obs_shape:
