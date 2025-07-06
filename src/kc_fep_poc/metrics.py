@@ -1,5 +1,6 @@
 import lzma
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 
@@ -39,6 +40,12 @@ def compression_bound(nll_bits: float, theta: float) -> float:
 def lzma_size_bits(obs: np.ndarray) -> int:
     """Compress using LZMA and return size in bits."""
     data = bytes(obs)
+    return len(lzma.compress(data)) * 8
+
+
+def bits_lzma(path: str | Path) -> int:
+    """Return size in bits of ``path`` compressed with LZMA."""
+    data = Path(path).read_bytes()
     return len(lzma.compress(data)) * 8
 
 
