@@ -1,5 +1,6 @@
 """Command-line interface for the toy compression demo."""
-from .metrics import generate_observations, compute_metrics
+
+from .metrics import compute_metrics, generate_observations
 
 
 def main() -> None:

@@ -1,19 +1,18 @@
 from __future__ import annotations
 
-from pathlib import Path
 import argparse
+from pathlib import Path
 
 from .metrics import generate_observations
-
 
 DEFAULT_STEPS = 4096
 DEFAULT_RUNS = 100
 P_VALUES = [round(i / 10, 1) for i in range(1, 10)]
 
 
-def write_dataset(output_dir: str | Path,
-                  steps: int = DEFAULT_STEPS,
-                  runs: int = DEFAULT_RUNS) -> None:
+def write_dataset(
+    output_dir: str | Path, steps: int = DEFAULT_STEPS, runs: int = DEFAULT_RUNS
+) -> None:
     """Write binary observation files for a range of Bernoulli parameters.
 
     Parameters
@@ -40,8 +39,12 @@ def write_dataset(output_dir: str | Path,
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Generate binary Bernoulli dataset")
-    parser.add_argument("output", nargs="?", default="dataset",
-                        help="directory to store generated files")
+    parser.add_argument(
+        "output",
+        nargs="?",
+        default="dataset",
+        help="directory to store generated files",
+    )
     args = parser.parse_args(argv)
     write_dataset(args.output)
 

@@ -115,6 +115,13 @@ Binding Kolmogorov complexity and variational free energy along a single bit-axi
 
 ---
 
+## Setup
+
+```bash
+pip install -r requirements-dev.txt
+pre-commit install   # one-time
+```
+
 ## Running the Example
 
 1. Install dependencies (Python 3.8+ recommended):

@@ -1,9 +1,10 @@
 import os
 import sys
-import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-from kc_fep_poc.metrics import compute_metrics, generate_observations
+
+from kc_fep_poc.metrics import compute_metrics  # noqa: E402
+from kc_fep_poc.metrics import generate_observations  # noqa: E402
 
 
 def test_metrics_runs():

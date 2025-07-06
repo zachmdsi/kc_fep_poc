@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from kc_fep_poc.dataset import write_dataset
+from kc_fep_poc.dataset import write_dataset  # noqa: E402
 
 
 def test_write_dataset(tmp_path: Path):
@@ -16,4 +16,3 @@ def test_write_dataset(tmp_path: Path):
     # check a single file length
     sample_file = next(dirs[0].iterdir())
     assert sample_file.stat().st_size == 4096
-
