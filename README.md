@@ -1,5 +1,10 @@
 # Kolmogorov-Complexity × Free-Energy Active Inference
 
+This repository contains a proof-of-concept for linking Friston's Free-Energy Principle to the algorithmic compressibility of sensorimotor streams. It explores how tracking description lengths provides an objective gauge for perception and action.
+
+The code includes a simple dataset generator, lightweight metrics and tests. Together they offer a starting point for experiments on compression-aware active inference.
+
+
 ---
 
 ### Abstract
