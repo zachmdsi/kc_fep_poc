@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -37,6 +38,14 @@ def write_dataset(
     out_path = Path(output_dir)
     out_path.mkdir(parents=True, exist_ok=True)
 
+    metadata_file = out_path / "metadata.json"
+    if metadata_file.exists():
+        metadata: dict[str, dict[str, int | float]] = json.loads(
+            metadata_file.read_text()
+        )
+    else:
+        metadata = {}
+
     for p in P_VALUES:
         subdir = out_path / f"p{p}"
         subdir.mkdir(exist_ok=True)
@@ -46,6 +55,11 @@ def write_dataset(
             obs = generate_observations(steps, p, rng)
             filename = subdir / f"run_{i:03d}.bin"
             obs.tofile(filename)
+            key = str(filename.relative_to(out_path))
+            metadata[key] = {"p": p, "seed": int(run_seed), "steps": steps}
+
+    with metadata_file.open("w") as f:
+        json.dump(metadata, f, indent=2, sort_keys=True)
 
 
 def main(argv: list[str] | None = None) -> None:
