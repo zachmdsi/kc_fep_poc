@@ -2,10 +2,9 @@ from __future__ import annotations
 
 """Training orchestrator tying together environment, logger and agent."""
 
+import csv
 from dataclasses import dataclass
 from pathlib import Path
-import csv
-from typing import Iterable, List
 
 from .metrics import Metrics
 
