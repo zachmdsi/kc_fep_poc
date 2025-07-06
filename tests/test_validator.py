@@ -16,15 +16,17 @@ def test_validator_passes(tmp_path: Path) -> None:
     csv_path = tmp_path / "metrics.csv"
     with csv_path.open("w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "episode",
-            "g_t",
-            "rho_t",
-            "k_hat",
-            "k_lzma",
-            "free_energy",
-            "file",
-        ])
+        writer.writerow(
+            [
+                "episode",
+                "g_t",
+                "rho_t",
+                "k_hat",
+                "k_lzma",
+                "free_energy",
+                "file",
+            ]
+        )
         for ep, p in enumerate([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]):
             obs = generate_observations(1000, p, rng)
             file = tmp_path / f"ep_{ep}.bin"
