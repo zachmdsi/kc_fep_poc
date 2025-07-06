@@ -1,135 +1,21 @@
-# Kolmogorov-Complexity × Free-Energy Active Inference
+# Kolmogorov Complexity and Free Energy in Active Inference
 
-This repository contains a proof-of-concept for linking Friston's Free-Energy Principle to the algorithmic compressibility of sensorimotor streams. It explores how tracking description lengths provides an objective gauge for perception and action.
+This project explores a simple question: can an intelligent agent compress its own sensory history more efficiently than a standard lossless compressor, and if so, do the saved bits line up with a lower free-energy score? Each saved bit would provide direct evidence that the agent’s model captures structure in the data and that the free-energy principle makes a falsifiable prediction.
 
-The code includes a simple dataset generator, lightweight metrics and tests. Together they offer a starting point for experiments on compression-aware active inference.
+Kolmogorov complexity is the length of the shortest computer program that can reproduce a given data stream. Although we cannot compute this length exactly, we can approximate an upper bound using a parametric model. When the bound becomes smaller, it means the description of the sensory history has become shorter.
 
+Free energy is a score that combines two ideas. The first is how well the model predicts the data we observe. The second is how simple the model itself remains. A lower score means the model explains the data efficiently without unnecessary complication. When the description of the data gets shorter, the free-energy score should drop as well. That connection allows us to test the free-energy principle in a concrete way.
 
----
+The experimental design is straightforward. Each episode of interaction produces three numbers:
 
-### Abstract
+- The length of the agent’s description of its sensory history.
+- The length produced by a strong off-the-shelf lossless compressor.
+- The agent’s free-energy score.
 
-We propose a strict information-theoretic test of Friston’s Free-Energy Principle (FEP). An agent that learns a generative model of its sensorimotor stream should, in principle, **shorten the algorithmic description length of that stream**. We formalise this as an upper-bound Kolmogorov complexity objective and prove that, under mild regularity conditions, the *per-step decrease* in that bound is proportional to the *per-step decrease* in variational free energy. The result yields a single scalar yard-stick—**bits per time-step**—linking perception, action and learning, and exposes an efficiency ceiling unreachable by policies that merely optimise extrinsic reward.
+These numbers let us trace learning progress episode by episode.
 
----
+The difference between the compressor’s length and the agent’s length is the compression gap. Tracking that gap over time reveals whether the agent is learning to represent the world more concisely than a universal compressor. We can also track the relation between the compression gap and the free-energy score, which we call the efficiency trend. When the agent becomes more skilled at compression, the free-energy score should fall proportionally.
 
-## 1 Problem Statement
+Three predictions follow from this setup. First, the compression gap should never shrink for long once learning begins. A steady decline would suggest the model is failing to capture structure. Second, the better the compression gets, the more the free-energy score should drop—the two numbers should move together. Third, after enough experience in a stable environment, the agent’s description of the data should be shorter than the one produced by the compressor.
 
-> Can an actively sampling agent compress its own sensory history **better than universal lossless compressors**, and does every saved bit correspond to a drop in free energy?
-
-If true, the FEP gains a falsifiable, byte-level prediction; if false, the principle’s universality claim weakens.
-
----
-
-## 2 Theoretical Foundations
-
-### 2.1 Kolmogorov Complexity
-
-For a string $s$, $K(s)$ is the length (in bits) of the shortest program that outputs $s$ on a fixed universal Turing machine and halts. $K(\,\cdot)$ is uncomputable; agents can only achieve **upper bounds**.
-
-*Two-part code bound* for a parametric model $\theta$:
-
-$$
-\widehat{K}_\theta(o_{1:T}) \;=\; \underbrace{\| \theta \|_2^2 \log 2}_{\text{model description}} \;+\; \sum_{t=1}^{T}\!-\log_2 p_\theta(o_t \mid h_{<t})
-\tag{1}
-$$
-
-### 2.2 Variational Free Energy
-
-Given latent posterior $q(z_{1:T})$ and generative model $p_\theta$,
-
-$$
-F_T \;=\; \underbrace{ \mathbb{E}_{q}\!\big[-\log p_\theta(o_{1:T}\!\mid\!z_{1:T})\big] }_{\text{accuracy}} \;+\; \underbrace{ \mathrm{KL}\!\big[q(z_{1:T}) \,\|\, p_\theta(z_{1:T})\big] }_{\text{complexity}}
-\tag{2}
-$$
-
-Active inference selects actions that minimise an *expected* $F_{t+\tau}$.
-
-### 2.3 Resource-Bounded Complexity
-
-We adopt Levin’s **Kt** measure:
-
-$$
-K_t(s) \;=\; \min_{\pi\;\text{halts in}\;t} \big\{\, |\pi| \;+\; \log t \big\}
-\tag{3}
-$$
-
-capturing both brevity and computation time, matching biological energy limits.
-
----
-
-## 3 Compression–Free-Energy Coupling
-
-**Proposition 1 (Bit-for-bit equivalence).**
-For any model class in which $q(z_t)$ is conditionally independent of $o_{>t}$ given $o_{\le t}$, the expected one-step change satisfies
-
-$$
-\underbrace{\mathbb{E}\!\left[\Delta \widehat{K}_\theta(o_{1:T})\right]}_{\text{compression gain}}
-\;=\;
-(1+\varepsilon_T)\,
-\underbrace{\mathbb{E}\!\left[\Delta F_T\right]}_{\text{free-energy drop}}
-\tag{4}
-$$
-
-where $|\varepsilon_T| \le \tfrac{1}{T}$ under bounded posterior entropy.
-
-*Sketch.* Rearranging (1) and (2) shows identical NLL terms; model-size penalty and KL differ by at most $O(1)$ bits per episode, vanishing asymptotically.
-
----
-
-## 4 Efficiency Metrics
-
-| Symbol                                          | Meaning                                  | Desired trend  |
-| ----------------------------------------------- | ---------------------------------------- | -------------- |
-| $G_T = K_{\text{LZMA}} - \widehat{K}_\theta$    | Compression gap vs. universal compressor | non-decreasing |
-| $\rho_T = \tfrac{\mathrm{d}F_T}{\mathrm{d}G_T}$ | Bit-elasticity of free energy            | converge to −1 |
-| $\eta_T = \tfrac{G_T}{E_T}$                     | Bits saved per Joule or CPU-cycle        | maximise       |
-
-A perfectly efficient agent reaches $G_T > 0$ while keeping $|\rho_T - 1| < \delta$ for small $\delta$.
-
----
-
-## 5 Predictions & Tests
-
-1. **Monotone Compression:** $G_T$ must grow (or plateau) as learning progresses; any sustained decline falsifies model sufficiency.
-2. **Tight Coupling:** Pearson correlation between $G_T$ and $-F_T$ should exceed 0.9 once transients fade.
-3. **Baseline Supremacy:** For stationary environments, there exists $T^\*$ such that $\widehat{K}_\theta(o_{1:T^\*}) \lt K_{\text{LZMA}}(o_{1:T^\*})$.
-
-Failure of any single prediction invalidates the claim that active inference yields algorithmically meaningful compression.
-
----
-
-## 6 Broader Implications
-
-* **Unified Complexity Yard-stick** — Replaces heuristic entropy or likelihood metrics with a foundation tied to algorithmic information theory.
-* **Resource-Bounded Rationality** — Kt injects explicit computational cost, making the theory testable on real hardware or biological energy budgets.
-* **Model Selection via Description Length** — Favours generative architectures that truly shorten code length rather than merely over-fitting likelihood.
-* **Objective Benchmark for FEP** — Moves debate from philosophical narratives to byte-level, peer-verifiable experiments.
-
----
-
-### Conclusion
-
-Binding Kolmogorov complexity and variational free energy along a single bit-axis yields the clearest, falsifiable formulation of the Free-Energy Principle to date. An agent that cannot demonstrably compress its own history beyond universal compressors has no claim to “minimising surprise”; one that can, supplies the missing algorithmic proof.
-
-
----
-
-## Setup
-
-```bash
-pip install -r requirements-dev.txt
-pre-commit install   # one-time
-```
-
-## Running the Example
-
-1. Install dependencies (Python 3.8+ recommended):
-   ```bash
-   pip install numpy
-   ```
-2. Run the toy compression script:
-   ```bash
-   PYTHONPATH=src python -m kc_fep_poc
-   ```
-   The script simulates a binary sensor stream, fits a Bernoulli model by maximum likelihood and reports the predicted metrics `G_T` and `\rho_T` alongside the LZMA baseline.
+Confirming these trends would support the idea that active inference not only guides actions but also shortens the algorithmic description of experience. If those trends disappear, we learn that the link may be weaker than theorised. Either outcome delivers a clear, measurable test of the free-energy principle.
