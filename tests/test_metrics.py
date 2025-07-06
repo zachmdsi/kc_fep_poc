@@ -6,8 +6,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import numpy as np  # noqa: E402
 import pytest  # noqa: E402
 
-from kc_fep_poc.metrics import compute_metrics  # noqa: E402
-from kc_fep_poc.metrics import generate_observations  # noqa: E402
+from kc_fep_poc.metrics import (  # noqa: E402
+    bits_lzma,
+    compute_metrics,
+    generate_observations,
+    lzma_size_bits,
+)
 
 
 def test_metrics_runs():
@@ -31,3 +35,10 @@ def test_generate_observations_deterministic_seed():
     obs1 = generate_observations(50, p, np.random.default_rng(seed))
     obs2 = generate_observations(50, p, np.random.default_rng(seed))
     assert np.array_equal(obs1, obs2)
+
+
+def test_bits_lzma_file(tmp_path):
+    obs = generate_observations(32, 0.5)
+    f = tmp_path / "obs.bin"
+    obs.tofile(f)
+    assert bits_lzma(f) == lzma_size_bits(obs)
