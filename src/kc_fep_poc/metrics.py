@@ -36,6 +36,7 @@ class Metrics:
 
 
 def compute_metrics(obs: np.ndarray, model_p: float) -> Metrics:
+    """Compute compression and free-energy metrics."""
     nll = compute_nll(obs, model_p)
     k_hat = compression_bound(nll, model_p)
     k_lzma = lzma_size_bits(obs)
@@ -44,24 +45,3 @@ def compute_metrics(obs: np.ndarray, model_p: float) -> Metrics:
     free_energy = nll
     rho_t = free_energy / g_t if g_t != 0 else float('inf')
     return Metrics(g_t, rho_t, k_hat, k_lzma, free_energy)
-
-
-def main():
-    num_steps = 1000
-    true_p = 0.3
-    obs = generate_observations(num_steps, true_p)
-    # MLE estimate
-    mle_p = float(obs.mean())
-    metrics = compute_metrics(obs, mle_p)
-    print("Observations:", num_steps)
-    print("True p:", true_p)
-    print("MLE p:", mle_p)
-    print("K_lzma (bits):", metrics.k_lzma)
-    print("K_hat (bits):", metrics.k_hat)
-    print("Compression gap G_T:", metrics.g_t)
-    print("Free energy F_T:", metrics.free_energy)
-    print("Bit-elasticity rho_T:", metrics.rho_t)
-
-
-if __name__ == "__main__":
-    main()
