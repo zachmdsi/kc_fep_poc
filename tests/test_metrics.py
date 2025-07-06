@@ -6,8 +6,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import numpy as np  # noqa: E402
 import pytest  # noqa: E402
 
-from kc_fep_poc.metrics import bits_lzma, compute_metrics  # noqa: E402
-from kc_fep_poc.metrics import generate_observations, lzma_size_bits  # noqa: E402
+from kc_fep_poc.metrics import (  # noqa: E402
+    bits_lzma,
+    compute_metrics,
+    generate_observations,
+    lzma_size_bits,
+)
 
 
 def test_metrics_runs():
