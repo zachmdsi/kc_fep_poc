@@ -3,8 +3,10 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-import haiku as hk  # noqa: E402
-import jax  # noqa: E402
+import pytest  # noqa: E402
+
+hk = pytest.importorskip("haiku")  # noqa: E402
+jax = pytest.importorskip("jax")  # noqa: E402
 import numpy as np  # noqa: E402
 
 from kc_fep_poc.world_model import WorldModel  # noqa: E402
