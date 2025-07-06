@@ -1,6 +1,7 @@
 import lzma
-import numpy as np
 from dataclasses import dataclass
+
+import numpy as np
 
 
 def generate_observations(num_steps: int, p: float) -> np.ndarray:
@@ -17,7 +18,7 @@ def compute_nll(obs: np.ndarray, p: float) -> float:
 
 def compression_bound(nll_bits: float, theta: float) -> float:
     """Two-part code bound from README eq. (1)."""
-    return theta ** 2 * np.log(2) + nll_bits
+    return theta**2 * np.log(2) + nll_bits
 
 
 def lzma_size_bits(obs: np.ndarray) -> int:
@@ -43,5 +44,5 @@ def compute_metrics(obs: np.ndarray, model_p: float) -> Metrics:
     g_t = k_lzma - k_hat
     # For this simple model free energy equals nll (accuracy term) as we ignore KL
     free_energy = nll
-    rho_t = free_energy / g_t if g_t != 0 else float('inf')
+    rho_t = free_energy / g_t if g_t != 0 else float("inf")
     return Metrics(g_t, rho_t, k_hat, k_lzma, free_energy)
