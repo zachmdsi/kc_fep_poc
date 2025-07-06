@@ -26,9 +26,7 @@ class WorldModel(hk.Module):
         z = mean + jnp.exp(0.5 * logvar) * eps
 
         # KL divergence to N(0,1)
-        kl = 0.5 * jnp.sum(
-            jnp.square(mean) + jnp.exp(logvar) - 1.0 - logvar, axis=-1
-        )
+        kl = 0.5 * jnp.sum(jnp.square(mean) + jnp.exp(logvar) - 1.0 - logvar, axis=-1)
         kl = jnp.mean(kl)
 
         # Decoder
@@ -37,7 +35,9 @@ class WorldModel(hk.Module):
         h = jnp.reshape(h, (-1,) + tuple(enc_shape))
         h = hk.Conv2DTranspose(32, kernel_shape=3, stride=2, padding="SAME")(h)
         h = jax.nn.relu(h)
-        logits = hk.Conv2DTranspose(x.shape[-1], kernel_shape=3, stride=2, padding="SAME")(h)
+        logits = hk.Conv2DTranspose(
+            x.shape[-1], kernel_shape=3, stride=2, padding="SAME"
+        )(h)
         recon = jax.nn.sigmoid(logits)
 
         # Bernoulli negative log-likelihood
