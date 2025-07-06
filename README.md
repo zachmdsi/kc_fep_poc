@@ -118,6 +118,6 @@ Binding Kolmogorov complexity and variational free energy along a single bit-axi
    ```
 2. Run the toy compression script:
    ```bash
-   python src/main.py
+   PYTHONPATH=src python -m kc_fep_poc
    ```
    The script simulates a binary sensor stream, fits a Bernoulli model by maximum likelihood and reports the predicted metrics `G_T` and `\rho_T` alongside the LZMA baseline.
