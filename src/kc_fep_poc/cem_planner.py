@@ -14,7 +14,13 @@ _ELITE_FRAC = 0.25
 _NUM_ITERS = 3
 
 
-def plan(obs: np.ndarray, model) -> int:
+def plan(
+    obs: np.ndarray,
+    model,
+    *,
+    rng: np.random.Generator | None = None,
+    seed: int | None = None,
+) -> int:
     """Return action planned via cross-entropy method.
 
     Parameters
@@ -24,21 +30,27 @@ def plan(obs: np.ndarray, model) -> int:
     model : object
         Model must implement ``rollout(obs, actions)`` returning the expected
         free energy of executing ``actions`` starting from ``obs``.
+    rng : numpy.random.Generator, optional
+        Random number generator to use. If omitted, ``numpy.random.default_rng``
+        is used with ``seed``.
+    seed : int, optional
+        Seed for the random number generator when ``rng`` is ``None``.
 
     Returns
     -------
     int
-        The chosen action (0 or 1).
+        The chosen action from a binary action space ``{0, 1}``.
     """
+    generator = rng if rng is not None else np.random.default_rng(seed)
+
     # Initial probability of sampling action 1 at each time step
     probs = np.full(_HORIZON, 0.5)
-    rng = np.random.default_rng()
 
     elite_count = max(1, int(_NUM_SAMPLES * _ELITE_FRAC))
 
     for _ in range(_NUM_ITERS):
         # Sample action sequences according to current probabilities
-        samples = rng.random((_NUM_SAMPLES, _HORIZON)) < probs
+        samples = generator.random((_NUM_SAMPLES, _HORIZON)) < probs
         actions = samples.astype(int)
 
         # Evaluate sequences via model rollout

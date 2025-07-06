@@ -16,6 +16,13 @@ class DummyModel:
 
 def test_plan_returns_int():
     obs = np.array([0])
-    action = plan(obs, DummyModel())
+    action = plan(obs, DummyModel(), seed=123)
     assert isinstance(action, int)
     assert action in (0, 1)
+
+
+def test_plan_deterministic_with_seed():
+    obs = np.array([0])
+    a1 = plan(obs, DummyModel(), seed=42)
+    a2 = plan(obs, DummyModel(), seed=42)
+    assert a1 == a2
